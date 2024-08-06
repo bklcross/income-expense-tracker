@@ -1,0 +1,18 @@
+[
+  {
+    "clientId": 1,
+    "creationDate": "2023-01-06",
+    "referenceNumber": 1,
+    "amount": 500,
+    "status": "NOT_PAID",
+    "name": "John Smith"
+  },
+  {
+    "clientId": 2,
+    "creationDate": "2023-01-07",
+    "referenceNumber": 2,
+    "amount": -200,
+    "status": "PAID",
+    "name": "Jane Doe"
+  }
+]

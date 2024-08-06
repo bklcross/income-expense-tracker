@@ -20,16 +20,6 @@
     "name": "Home and Garden Center"
   },
   {
-    "transactionId": 11,
-    "invoiceId": 1,
-    "type": "AR",
-    "transactionDate": "01/14/2023",
-    "description": "Invoice Payment",
-    "amount": 310,
-    "creationDate": "01/16/2023",
-    "name": "John Smith"
-  },
-  {
     "transactionId": 3,
     "invoiceId": 3,
     "type": "AP",
@@ -108,5 +98,15 @@
     "amount": 400,
     "creationDate": "01/16/2024",
     "name": "Sarah Smith"
+  },
+  {
+    "transactionId": 11,
+    "invoiceId": 1,
+    "type": "AR",
+    "transactionDate": "01/14/2023",
+    "description": "Invoice Payment",
+    "amount": 310,
+    "creationDate": "01/16/2023",
+    "name": "John Smith"
   }
 ]
