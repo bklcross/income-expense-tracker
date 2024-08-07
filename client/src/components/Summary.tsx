@@ -1,40 +1,43 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Transaction } from "../shared/interfaces";
-import { evaluateColor } from "../shared/utils";
+import { Invoice, Transaction } from "../shared/interfaces";
+import { evaluateColor, filterLast30DaysInvoices } from "../shared/utils";
 import { Box, Typography } from "@mui/material";
 
-export const Summary: React.FC = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+interface SummaryProps {
+  transactions: Transaction[];
+  invoices: Invoice[];
+}
+
+export const Summary = ({
+  transactions,
+  invoices,
+}: SummaryProps): JSX.Element => {
   const [total, setTotal] = useState<number>(0);
+  const [invoiceCount, setInvoiceCount] = useState<number>(0);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/transactions");
-        const data: Transaction[] = response.data;
-        setTransactions(data);
+    const filteredInvoices: Invoice[] = filterLast30DaysInvoices(invoices);
+    setInvoiceCount(filteredInvoices.length);
 
-        // Calculate total amount
-        const totalAmount = data.reduce(
-          (acc, transaction) => acc + transaction.amount,
-          0
-        );
-        setTotal(totalAmount);
-      } catch (error) {
-        console.error("Failed to fetch transactions:", error);
-      }
-    };
-
-    fetchData();
+    const totalAmount = transactions.reduce(
+      (acc, transaction) => acc + transaction.amount,
+      0
+    );
+    setTotal(totalAmount);
   }, []);
 
   return (
     <Box className="App">
-      <Typography variant={"h1"}>Financial Summary</Typography>
-      <Box className="summary-widget">
-        <Typography variant={"h2"} sx={{ color: evaluateColor(total) }}>
-          {`Total: $${total.toFixed(2)}`}
+      <Typography variant={"h3"}>Financial Summary</Typography>
+      <Box>
+        <Typography variant={"h4"} sx={{ color: evaluateColor(total) }}>
+          {`Total: ${total > 0 ? "" : "-"}$${Math.abs(total).toFixed(2)}`}
+        </Typography>
+      </Box>
+      <Box>
+        <Typography variant={"h4"}>
+          {`Invoice Count (last 30 days): ${invoiceCount}`}
         </Typography>
       </Box>
     </Box>

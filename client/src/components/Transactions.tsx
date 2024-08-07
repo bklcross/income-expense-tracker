@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import {
   Table,
   TableBody,
@@ -13,22 +13,13 @@ import {
 import { Transaction } from "../shared/interfaces";
 import axios from "axios";
 
-export const Transactions: React.FC = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+interface TransactionsProps {
+  transactions: Transaction[];
+}
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await axios.get<Transaction[]>("/transactions");
-        setTransactions(response.data);
-      } catch (error) {
-        console.error("Failed to fetch transactions:", error);
-      }
-    };
-
-    fetchTransactions();
-  }, []);
-
+export const Transactions = ({
+  transactions,
+}: TransactionsProps): JSX.Element => {
   const renderTransactions = (): ReactNode | null => {
     let result: ReactNode | null = null;
 

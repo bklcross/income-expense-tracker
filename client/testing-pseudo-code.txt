@@ -1,0 +1,52 @@
+Summary Widget Tests Acceptance Criteria
+Total Monetary Amount Display:
+
+The widget correctly reads the data from the list of transactions and calculates the total monetary amount in the bank account.
+The total monetary amount is displayed in green if it is greater than a configured positive threshold.
+The total monetary amount is displayed in yellow if it is lower than the positive threshold but still positive.
+The total monetary amount is displayed in red if it is lower than 0.00.
+Number of Invoices Created in the Last 30 Days:
+
+The widget correctly counts and displays the number of invoices created in the last 30 days.
+Data Updates:
+
+The widget updates the total monetary amount and the number of invoices created in the last 30 days when new transactions are added or existing transactions are modified.
+The widget updates the total monetary amount and the number of invoices created in the last 30 days when new invoices are created or existing invoices are edited.
+Invoices Widget Tests Acceptance Criteria
+Invoice Management:
+
+Users can create a new invoice with fields: client name, creation date, unique reference number, and monetary amount.
+Users can edit existing invoices, modifying fields: client name, creation date, unique reference number, and monetary amount.
+The invoice status is read-only and is calculated based on the criteria provided.
+Invoice Status Calculation:
+
+An invoice is marked as PAID if there is a bank transaction for the same amount, with the same reference number, and the transaction date is later than the invoice creation date.
+An invoice is marked as NOT PAID if the criteria for PAID status are not met.
+Data Consistency:
+
+Changes to invoices (creation, editing) automatically update the Summary Widget.
+New invoices created should reflect in the Summary Widget's count of invoices created in the last 30 days.
+Editing an invoice to meet the criteria for PAID status should update its status accordingly.
+Integration and Interaction Tests
+Consistent State Across Widgets:
+
+Creating a new invoice updates the Summary Widget’s count of invoices created in the last 30 days.
+Editing an invoice's monetary amount or reference number affects the invoice status and updates both the Invoices Widget and the Summary Widget accordingly.
+Threshold Configuration:
+
+The configured positive threshold is adjustable and impacts the color display logic in the Summary Widget correctly.
+Changing the threshold updates the color display in real-time without requiring a page refresh.
+Error Handling and Validation:
+
+Creating or editing an invoice with invalid data (e.g., missing required fields, non-unique reference number) shows appropriate error messages.
+The system prevents duplicate transactions or invoices based on the unique reference number.
+Data Persistence:
+
+Changes to transactions and invoices are persisted and reflect accurately after a page refresh or re-login.
+The system accurately reads and writes transaction and invoice data from/to the backend.
+Responsive Design:
+
+The widgets are responsive and display correctly on various screen sizes (e.g., mobile, tablet, desktop).
+Performance:
+
+The widgets load and update data within an acceptable timeframe (e.g., <2 seconds for major interactions).

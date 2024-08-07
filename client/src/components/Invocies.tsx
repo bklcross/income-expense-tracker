@@ -18,43 +18,38 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { Invoice, Transaction } from "../shared/interfaces";
+import { formatDate } from "../shared/utils";
 
-export const Invoices: React.FC = () => {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+interface InvoicesProps {
+  loadTransactions: () => Promise<void>;
+  loadInvoices: () => Promise<void>;
+  transactions: Transaction[];
+  invoices: Invoice[];
+}
+
+export const Invoices = ({
+  loadTransactions,
+  loadInvoices,
+  transactions,
+  invoices,
+}: InvoicesProps): JSX.Element => {
   const [open, setOpen] = useState(false);
   const [newInvoice, setNewInvoice] = useState<Omit<Invoice, "status">>({
-    clientId: 0,
+    invoiceId: 0,
     creationDate: "",
     referenceNumber: 0,
     amount: 0,
     name: "",
   });
+  const [isEdit, setIsEdit] = useState(false);
 
   useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        const response = await axios.get<Invoice[]>("/invoices");
-        setInvoices(response.data);
-      } catch (error) {
-        console.error("Failed to fetch invoices:", error);
-      }
-    };
-
-    const fetchTransactions = async () => {
-      try {
-        const response = await axios.get<Transaction[]>("/transactions");
-        setTransactions(response.data);
-      } catch (error) {
-        console.error("Failed to fetch transactions:", error);
-      }
-    };
-
-    fetchInvoices();
-    fetchTransactions();
+    loadInvoices();
+    loadTransactions();
   }, []);
 
   const handleClickOpen = () => {
+    setIsEdit(false);
     setOpen(true);
   };
 
@@ -69,14 +64,50 @@ export const Invoices: React.FC = () => {
 
   const handleSave = async () => {
     try {
-      const response = await axios.post<Invoice>("/invoices", {
-        ...newInvoice,
-      });
+      if (isEdit) {
+        // Update existing invoice
+        const response = await axios.put<Invoice>(
+          `/invoices/${newInvoice.invoiceId}`,
+          {
+            ...newInvoice,
+            creationDate: formatDate(new Date(newInvoice.creationDate)),
+          }
+        );
+      } else {
+        // Add new invoice
+        const response = await axios.post<Invoice>("/invoices", {
+          ...newInvoice,
+          creationDate: formatDate(new Date(newInvoice.creationDate)),
+        });
+      }
 
-      setInvoices([...invoices, response.data]);
+      await loadInvoices();
+
       handleClose();
     } catch (error) {
       console.error("Failed to save invoice:", error);
+    }
+  };
+
+  const handleEdit = (invoice: Invoice) => {
+    setIsEdit(true);
+    setNewInvoice({
+      invoiceId: invoice.invoiceId,
+      creationDate: invoice.creationDate,
+      referenceNumber: invoice.referenceNumber,
+      amount: invoice.amount,
+      name: invoice.name,
+    });
+    setOpen(true);
+  };
+
+  const handleDelete = async (invoiceId: number) => {
+    try {
+      await axios.delete(`/invoices/${invoiceId}`);
+
+      await loadInvoices();
+    } catch (error) {
+      console.error("Failed to delete invoice:", error);
     }
   };
 
@@ -93,43 +124,21 @@ export const Invoices: React.FC = () => {
             variant="contained"
             color="primary"
             onClick={() => handleEdit(invoice)}
+            sx={{ margin: "0 8px" }}
           >
             Edit
           </Button>
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => handleDelete(invoice.referenceNumber)}
+            onClick={() => handleDelete(invoice.invoiceId)}
+            sx={{ margin: "0 8px" }}
           >
             Delete
           </Button>
         </TableCell>
       </TableRow>
     ));
-  };
-
-  const handleEdit = (invoice: Invoice) => {
-    setNewInvoice({
-      clientId: invoice.clientId,
-      creationDate: invoice.creationDate,
-      referenceNumber: invoice.referenceNumber,
-      amount: invoice.amount,
-      name: invoice.name,
-    });
-    setOpen(true);
-  };
-
-  const handleDelete = async (referenceNumber: number) => {
-    try {
-      await axios.delete(`/invoices/${referenceNumber}`);
-      setInvoices(
-        invoices.filter(
-          (invoice) => invoice.referenceNumber !== referenceNumber
-        )
-      );
-    } catch (error) {
-      console.error("Failed to delete invoice:", error);
-    }
   };
 
   return (
@@ -157,7 +166,7 @@ export const Invoices: React.FC = () => {
       </TableContainer>
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add New Invoice</DialogTitle>
+        <DialogTitle>{isEdit ? "Edit Invoice" : "Add New Invoice"}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus

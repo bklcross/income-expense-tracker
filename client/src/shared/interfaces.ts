@@ -12,7 +12,7 @@ export interface Transaction {
 }
 
 export interface Invoice {
-  clientId: number;
+  invoiceId: number;
   creationDate: string;
   referenceNumber: number;
   amount: number;
