@@ -10,15 +10,11 @@ import {
   Paper,
   Typography,
   Button,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
 } from "@mui/material";
 import axios from "axios";
 import { Invoice, Transaction } from "../shared/interfaces";
 import { formatDate } from "../shared/utils";
+import { InvoiceDialog } from "./InvoiceDialog";
 
 interface InvoicesProps {
   loadTransactions: () => Promise<void>;
@@ -66,16 +62,13 @@ export const Invoices = ({
     try {
       if (isEdit) {
         // Update existing invoice
-        const response = await axios.put<Invoice>(
-          `/invoices/${newInvoice.invoiceId}`,
-          {
-            ...newInvoice,
-            creationDate: formatDate(new Date(newInvoice.creationDate)),
-          }
-        );
+        await axios.put<Invoice>(`/invoices/${newInvoice.invoiceId}`, {
+          ...newInvoice,
+          creationDate: formatDate(new Date(newInvoice.creationDate)),
+        });
       } else {
         // Add new invoice
-        const response = await axios.post<Invoice>("/invoices", {
+        await axios.post<Invoice>("/invoices", {
           ...newInvoice,
           creationDate: formatDate(new Date(newInvoice.creationDate)),
         });
@@ -164,62 +157,14 @@ export const Invoices = ({
           <TableBody>{renderInvoices()}</TableBody>
         </Table>
       </TableContainer>
-
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{isEdit ? "Edit Invoice" : "Add New Invoice"}</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="name"
-            label="Client Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={newInvoice.name}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="dense"
-            name="creationDate"
-            label="Creation Date"
-            type="date"
-            fullWidth
-            variant="standard"
-            value={newInvoice.creationDate}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            margin="dense"
-            name="referenceNumber"
-            label="Reference Number"
-            type="number"
-            fullWidth
-            variant="standard"
-            value={newInvoice.referenceNumber}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="dense"
-            name="amount"
-            label="Amount"
-            type="number"
-            fullWidth
-            variant="standard"
-            value={newInvoice.amount}
-            onChange={handleChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <InvoiceDialog
+        open={open}
+        handleClose={handleClose}
+        handleSave={handleSave}
+        handleChange={handleChange}
+        newInvoice={newInvoice}
+        isEdit={isEdit}
+      />
     </Box>
   );
 };

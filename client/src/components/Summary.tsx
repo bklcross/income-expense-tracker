@@ -25,7 +25,7 @@ export const Summary = ({
       0
     );
     setTotal(totalAmount);
-  }, []);
+  }, [transactions, invoices]);
 
   return (
     <Box className="App">

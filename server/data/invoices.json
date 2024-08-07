@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "invoiceId": 0,
+    "creationDate": "02/04/2019",
+    "referenceNumber": "1",
+    "amount": "310",
+    "name": "JJ",
+    "status": "PAID"
+  },
+  {
+    "invoiceId": 0,
+    "creationDate": "08/03/2024",
+    "referenceNumber": "1",
+    "amount": "310",
+    "name": "PP",
+    "status": "NOT_PAID"
+  }
+]
